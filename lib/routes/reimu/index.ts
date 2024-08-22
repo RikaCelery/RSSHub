@@ -1,4 +1,5 @@
 import { DataItem, Route } from '@/types';
+import { parseDate } from '@/utils/parse-date';
 import got from '@/utils/got';
 import { load } from 'cheerio';
 
@@ -46,7 +47,7 @@ async function handler(ctx) {
                     title: $(el).find('.entry-title').text(),
                     id,
                     link,
-                    pubDate,
+                    pubDate: pubDate ? parseDate(pubDate) : undefined,
                     updated,
                     author,
                     banner,
