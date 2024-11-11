@@ -4,13 +4,13 @@ import utils from './utils';
 import { fallback, queryToBoolean } from '@/utils/readable-social';
 
 export const route: Route = {
-    path: '/tweet/:id/status/:status/:original?',
+    path: '/tweet/:id/status/:status/:params?',
     categories: ['social-media'],
     example: '/twitter/tweet/DIYgod/status/1650844643997646852',
     parameters: {
         id: 'username; in particular, if starts with `+`, it will be recognized as a [unique ID](https://github.com/DIYgod/RSSHub/issues/12221), e.g. `+44196397`',
         status: 'tweet ID',
-        original: 'extra parameters, data type of return, if the value is not `0`/`false` and `config.isPackage` is `true`, return the original data of twitter',
+        params: 'extra parameters, data type of return, if the value is not `0`/`false` and `config.isPackage` is `true`, return the original data of twitter',
     },
     features: {
         requireConfig: [
@@ -37,8 +37,9 @@ export const route: Route = {
 async function handler(ctx) {
     const id = ctx.req.param('id');
     const status = ctx.req.param('status');
-    const routeParams = new URLSearchParams(ctx.req.param('original'));
+    const routeParams = new URLSearchParams(ctx.req.param('params'));
     const original = fallback(undefined, queryToBoolean(routeParams.get('original')), false);
+    const single: boolean = fallback(undefined, queryToBoolean(routeParams.get('single')), true);
     const params = {
         focalTweetId: status,
         with_rux_injections: false,
@@ -53,8 +54,8 @@ async function handler(ctx) {
     const userInfo = await api.getUser(id);
     const data = await api.getUserTweet(id, params);
     const profileImageUrl = userInfo.profile_image_url || userInfo.profile_image_url_https;
-    const item = original && config.isPackage ? data : utils.ProcessFeed(ctx, { data });
-
+    const filtered = data.filter((tweet) => tweet.id_str === status);
+    const item = original && config.isPackage ? (single ? filtered : data) : utils.ProcessFeed(ctx, { data: single ? filtered : data });
     return {
         title: `Twitter @${userInfo.name}`,
         link: `https://x.com/${userInfo.screen_name}/status/${status}`,

@@ -1,12 +1,12 @@
+import { config as dotconfig } from 'dotenv';
 import { serve } from '@hono/node-server';
 import logger from '@/utils/logger';
 import { getLocalhostAddress } from '@/utils/common-utils';
 import { config } from '@/config';
 import app from '@/app';
-
+dotconfig();
 const port = config.connect.port;
 const hostIPList = getLocalhostAddress();
-
 logger.info(`🎉 RSSHub is running on port ${port}! Cheers!`);
 logger.info('💖 Can you help keep this open source project alive? Please sponsor 👉 https://docs.rsshub.app/sponsor');
 logger.info(`🔗 Local: 👉 http://localhost:${port}`);

@@ -87,7 +87,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         widthOfPics,
         heightOfPics,
         sizeOfAuthorAvatar,
-        sizeOfQuotedAuthorAvatar,
+        // sizeOfQuotedAuthorAvatar,
     } = params;
 
     const formatVideo = (media, extraAttrs = '') => {
@@ -210,7 +210,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
                     quote += `<br clear='both' /><div style='clear: both'></div>`;
                     quote += `<blockquote style='background: #80808010;border-top:1px solid #80808030;border-bottom:1px solid #80808030;margin:0;padding:5px 20px;'>`;
                 } else {
-                    quote += `<br><br>`;
+                    quote += ``;
                 }
 
                 if (readable) {
@@ -218,14 +218,23 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
                 }
 
                 if (showQuotedAuthorAvatarInDesc) {
-                    quote += `<img width='${sizeOfQuotedAuthorAvatar}' height='${sizeOfQuotedAuthorAvatar}' src='${author.profile_image_url_https}' ${readable ? 'hspace="8" vspace="8" align="left"' : ''}>`;
+                    // quote += `<img width='${sizeOfQuotedAuthorAvatar}' height='${sizeOfQuotedAuthorAvatar}' src='${author.profile_image_url_https}' ${readable ? 'hspace="8" vspace="8" align="left"' : ''}>`;
                 }
 
                 if (authorNameBold) {
                     quote += `<strong>`;
                 }
 
-                quote += author.name;
+                quote += `
+                <div class="header">
+                    <div class="author-logo"><img src="${author.profile_image_url_https}">
+                    </div>
+                    <div class="author-name">
+                        <div class="nick">${author.name}</div>
+                        <div class="id">@${author.screen_name}</div>
+                    </div>
+                </div>`;
+                // quote += author.name;
 
                 if (authorNameBold) {
                     quote += `</strong>`;
@@ -235,7 +244,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
                     quote += `</a>`;
                 }
 
-                quote += `:&ensp;`;
+                // quote += `:&ensp;`;
                 quote += formatText(quoteData);
 
                 if (!readable) {
