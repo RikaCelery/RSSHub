@@ -5,6 +5,7 @@ import iconv from 'iconv-lite';
 import { parseDate } from '@/utils/parse-date';
 import timezone from '@/utils/timezone';
 import { config } from '@/config';
+import logger from '@/utils/logger';
 
 export const route: Route = {
     path: '/post/:tid/:authorId?',
@@ -25,7 +26,7 @@ export const route: Route = {
 };
 
 async function handler(ctx) {
-    const getPageUrl = (tid, authorId, page = 1, hash = '') => `https://nga.178.com/read.php?tid=${tid}&page=${page}${authorId ? `&authorid=${authorId}` : ''}&rand=${Math.random() * 1000}#${hash}`;
+    const getPageUrl = (tid, authorId, page = 1, hash = '') => `https://nga.178.com/read.php?tid=${tid}&page=${page}${authorId ? `&authorid=${authorId}` : ''}&rand=${Math.floor(Math.random() * 1000)}${hash ? '#' + hash : ''}`;
     const getPage = async (tid, authorId, pageId = 1) => {
         const link = getPageUrl(tid, authorId, pageId);
         const timestamp = Math.floor(Date.now() / 1000);
@@ -33,12 +34,24 @@ async function handler(ctx) {
         if (config.nga.uid && config.nga.cid) {
             cookieString = `ngaPassportUid=${config.nga.uid}; ngaPassportCid=${config.nga.cid};`;
         }
-        const response = await got(link, {
-            responseType: 'buffer',
-            headers: {
-                Cookie: cookieString,
-            },
-        });
+        logger.info(link);
+        logger.info(cookieString);
+        let response;
+        for (let index = 0; index < 8; index++) {
+            try {
+                // eslint-disable-next-line no-await-in-loop
+                response = await got(link, {
+                    responseType: 'buffer',
+                    headers: {
+                        Referer: `https://nga.178.com/read.php?tid=41312589`,
+                        Cookie: cookieString,
+                    },
+                });
+                break;
+            } catch (error) {
+                logger.warn(String(error) + 'retry');
+            }
+        }
 
         const htmlString = iconv.decode(response.data, 'gbk');
         return load(htmlString);
