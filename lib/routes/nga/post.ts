@@ -158,23 +158,23 @@ async function handler(ctx) {
             items.push(...pageItems);
         }
     } else {
-        const size = Number.parseInt(pageId);
-        const pages = await Promise.all(
-            Array(size)
-                .fill(0)
-                .map((_, i) => i + 1)
-                .slice(size - 2, size - 1)
-                .map(async (pageId) => {
-                    const data = await loadFromPage(tid, authorId, String(pageId));
-                    return data.items;
-                })
-        );
-        for (const pageItems of pages) {
-            items.push(...pageItems);
-        }
+        // const size = Number.parseInt(pageId);
+        // const pages = await Promise.all(
+        //     Array(size)
+        //         .fill(0)
+        //         .map((_, i) => i + 1)
+        //         .slice(size - 2, size - 1)
+        //         .map(async (pageId) => {
+        //             const data = await loadFromPage(tid, authorId, String(pageId));
+        //             return data.items;
+        //         })
+        // );
+        // for (const pageItems of pages) {
+        //     items.push(...pageItems);
+        // }
         const ascending = (
             await Promise.all(
-                Array(2)
+                Array(1)
                     .fill(0)
                     .map(async (_, i) => (await loadFromPage(tid, authorId, String(2 - i - 1))).items)
             )
