@@ -145,18 +145,18 @@ async function handler(ctx) {
 
     const { items, title, authorName } = await loadFromPage(tid, authorId, pageId);
     const rssTitle = authorName ? `NGA ${authorName} ${title}` : `NGA ${title}`;
-    if (Number.parseInt(pageId) <= 5) {
-        const pages = await Promise.all(
-            Array(Number.parseInt(pageId))
-                .fill(0)
-                .map(async (_, pageId) => {
-                    const data = await loadFromPage(tid, authorId, String(pageId + 1));
-                    return data.items;
-                })
-        );
-        for (const pageItems of pages) {
-            items.push(...pageItems);
-        }
+    if (Number.parseInt(pageId) <= 1) {
+        const pages = (
+            await Promise.all(
+                Array(Number.parseInt(pageId))
+                    .fill(0)
+                    .map(async (_, pageId) => {
+                        const data = await loadFromPage(tid, authorId, String(pageId + 1));
+                        return data.items;
+                    })
+            )
+        ).flat();
+        items.push(...pages);
     } else {
         // const size = Number.parseInt(pageId);
         // const pages = await Promise.all(
@@ -179,7 +179,7 @@ async function handler(ctx) {
                     .map(async (_, i) => (await loadFromPage(tid, authorId, String(2 - i - 1))).items)
             )
         ).flat();
-        const pageOneItems = ascending;
+        const pageOneItems = ascending.slice(10);
         const maxDate = items.findLast(() => true)!.pubDate;
         const minDate = pageOneItems[0].pubDate;
         const middleDate = new Date(Math.max(maxDate.getTime() - minDate.getTime(), 0) / 2 + minDate.getTime());
