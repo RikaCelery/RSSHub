@@ -165,8 +165,11 @@ async function handler(ctx) {
                 Array(1)
                     .fill(0)
                     .map(async (_, i) => (await loadFromPage(tid, authorId, String(2 - i - 1))).items)
+                    .toReversed()
             )
-        ).flat();
+        )
+            .flat()
+            .toReversed();
         const pageOneItems = ascending;
         const maxDate = items.findLast(() => true)!.pubDate;
         const minDate = pageOneItems[0].pubDate;
