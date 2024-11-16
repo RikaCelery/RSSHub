@@ -143,9 +143,11 @@ async function handler(ctx) {
     const authorId = ctx.req.param('authorId') || undefined;
     const pageId = await getLastPageId(tid, authorId);
 
-    const { items, title, authorName } = await loadFromPage(tid, authorId, pageId);
+    const { title, authorName } = await loadFromPage(tid, authorId, pageId);
+    // eslint-disable-next-line prefer-const
+    let items: any[] = [];
     const rssTitle = authorName ? `NGA ${authorName} ${title}` : `NGA ${title}`;
-    if (Number.parseInt(pageId) <= 5) {
+    if (Number.parseInt(pageId) <= 2) {
         const pages = await Promise.all(
             Array(Number.parseInt(pageId))
                 .fill(0)
@@ -158,20 +160,6 @@ async function handler(ctx) {
             items.push(...pageItems);
         }
     } else {
-        // const size = Number.parseInt(pageId);
-        // const pages = await Promise.all(
-        //     Array(size)
-        //         .fill(0)
-        //         .map((_, i) => i + 1)
-        //         .slice(size - 2, size - 1)
-        //         .map(async (pageId) => {
-        //             const data = await loadFromPage(tid, authorId, String(pageId));
-        //             return data.items;
-        //         })
-        // );
-        // for (const pageItems of pages) {
-        //     items.push(...pageItems);
-        // }
         const ascending = (
             await Promise.all(
                 Array(1)
